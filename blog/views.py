@@ -10,7 +10,7 @@ from accounts.utils import verify_user
 
 
 @api_view(["GET", "POST"])
-@permission_classes([IsAuthenticated])
+# @permission_classes([IsAuthenticated])
 def post_list(request):
     # Get the token from the header
     auth_header = request.headers.get("Authorization")
