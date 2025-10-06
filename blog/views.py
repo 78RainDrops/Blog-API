@@ -77,10 +77,10 @@ def post_details(request, pk):
     elif request.method == "PUT":
         if post.author != user:
             return Response(
-                {"error": "Not authorized"}, status=status.HTTP_401_UNAUTHORIZED
+                {"error": "Not authorized"}, status=status.HTTP_403_FORBIDDEN
             )
 
-        serializer = PostSerializers(post, request.data)
+        serializer = PostSerializers(post, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
@@ -89,7 +89,7 @@ def post_details(request, pk):
     elif request.method == "DELETE":
         if post.author != user:
             return Response(
-                {"error": "Not authorized"}, status=status.HTTP_401_UNAUTHORIZED
+                {"error": "Not authorized"}, status=status.HTTP_403_FORBIDDEN
             )
         post.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
@@ -161,3 +161,22 @@ def comment_details(request, pk, post_id):
     if request.method == "GET":
         serializer = CommentSerializers(comment)
         return Response(serializer.data)
+
+    elif request.method == "PUT":
+        if comment.author != user:
+            return Response(
+                {"error": "Permission Denied"}, status=status.HTTP_403_FORBIDDEN
+            )
+        serializer = CommentSerializers(comment, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == "DELETE":
+        if comment.author != user:
+            return Response(
+                {"error": "Permission Denied"}, status=status.HTTP_403_FORBIDDEN
+            )
+        comment.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
